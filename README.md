@@ -1,2 +1,2 @@
 # webscrapping
-to get data out of website using Selenium and BeautifillSoup
+To get data out of website using Selenium and BeautifilSoup
