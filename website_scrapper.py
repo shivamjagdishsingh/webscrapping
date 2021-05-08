@@ -10,14 +10,14 @@ import os
 import errno
 
 browser = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver")
-browser.get('https://www.ism-cologne.com/exhibitors-and-products/exhibitor-index/?fw_goto=aussteller/details&&kid=0002441403')
+browser.get('https://www.nurseryfair.com/exhibitor_info.asp?keyletter=*&id=1901')
 
-outfile = open('websitedata/ism/ism_complete.csv', 'a+', newline='')
+outfile = open('websitedata/nurseryfair/nurseryfair_complete.csv', 'a+', newline='')
 writer = csv.writer(outfile)
 writer.writerow(
-    ["name", "website", "address", "telephone", "actual_website", "email"])
+    ["name", "website", "address", "telephone", "actual_website", "email", "details"])
 
-with open('websitedata/ism/ism.csv') as csv_file:
+with open('websitedata/nurseryfair/nurseryfair.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     line_count = 0
     for row in csv_reader:
@@ -29,29 +29,41 @@ with open('websitedata/ism/ism.csv') as csv_file:
             try:
                 # browser.implicitly_wait(0)
                 browser.get(row[1])
-                time.sleep(3)
+                # time.sleep(1)
+                left_data = browser.find_element_by_class_name('infoleft')
+                right_data = browser.find_element_by_class_name('inforight')
+                # breakpoint()
                 try:
-                    address = browser.find_element_by_class_name('cont').text
+                    address = " ".join([i for i in left_data.find_elements_by_tag_name('p')[0].text.split('\n') if
+                                        "Web:" not in i and "Email" not in i and "Tel" not in i and "Fax" not in i])
                 except:
                     address = "address"
+
                 try:
-                    telephone = browser.find_element_by_class_name('ico_phone').text
+                    telephone = \
+                    [i for i in left_data.find_elements_by_tag_name('p')[0].text.split('\n') if "Tel:" in i][0].strip(
+                        'Tel: ')
                 except:
                     telephone = "telephone"
                 try:
-                    website = browser.find_element_by_class_name('ico_link').text
+                    website = [i for i in left_data.find_elements_by_tag_name('p')[0].text.split('\n') if "Web:" in i][
+                        0].strip('Web: ')
                 except:
                     website = "website"
                 try:
-                    email = browser.find_element_by_class_name('ico_email').text
+                    email = [i for i in left_data.find_elements_by_tag_name('p')[0].text.split('\n') if "Email:" in i][
+                        0].strip('Email: ')
                 except:
                     email = "email"
+                try:
+                    details = right_data.find_elements_by_tag_name('p')[1].text.split('\n')[0]
+                except:
+                    details = "details"
 
-
-                print(telephone, website, email)
-
+                # print(details)
+                # breakpoint()
                 writer.writerow(
-                    [row[0], row[1], address, telephone, website, email])
+                    [row[0], row[1], address, telephone, website, email, details])
             except Exception:
                 print("IIIIIIIIIIIIIIIIIIIIIIIIIIIII" + row[1])
             line_count += 1
