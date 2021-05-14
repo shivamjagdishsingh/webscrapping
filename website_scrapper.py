@@ -18,6 +18,7 @@ links = [
 ]
 
 browser = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver")
+
 # browser.get(
 #     'https://www.automechanika-birmingham.com/welcome/Exhibitors/exhibitor-list?&page=2&sortby=title%20asc%20%2Ctitle%20asc&searchgroup=943063BF-exhibitors')
 #
